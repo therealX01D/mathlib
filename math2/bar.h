@@ -2,18 +2,28 @@
 #include <cmath>
 #include "bar.h"
 #include "log.h"
+#include <vector>
 #define PI 3.1415926
 int pwr(int no, char pwr);
 int add(int st, int sond);
+
 class vec2d {
 private:
 	float m_x, m_y;
 public:
-	vec2d(){}
-	vec2d(float x, float y)
-		:m_x(x), m_y(y)
+	vec2d():
+		m_x(0),
+		m_y(0)
 	{}
-	vec2d(const vec2d& vec) {
+	vec2d(float x, float y)
+		:m_x(x),
+		m_y(y)
+	{}
+	vec2d(const vec2d& vec)
+		:
+		m_x(vec.m_x),
+		m_y(vec.m_y)
+	{
 		log("copied", 0);
 	}
 	float determinant() {
@@ -50,22 +60,54 @@ public:
 };
 class matrix :public vec2d {
 private:
-	int** m_matrix;
-	int* m_o_matrix;
+	std::vector <int> m_matrix;
 	int m_len[2];
+	int size;
+	std::vector<int> m_matrix_copy;
 public:
-
-	matrix(int ** i_matrix,int rw_len,int col_len):
-	    m_matrix(i_matrix),
-		m_len{ rw_len,col_len }
-	{
-
-	}
-	void fold() {
-	for(int i=0;i<sizeof(m_matrix[m_len[0]])- )
-	}
-	int* get() {
 	
+	matrix() {}
+	matrix(int* i_matrix, int rw_len, int col_len) :
+		m_matrix(std::vector<int>(i_matrix, i_matrix +rw_len*col_len)),
+		m_matrix_copy(std::vector<int>(0, 0 + rw_len*col_len)),
+		m_len{rw_len,col_len},
+		size(rw_len*col_len)
+	{
+		
+	}
+  
+	friend std::unique_ptr<matrix> operator+(matrix& mat1,const matrix& mat2) {
+		if (mat1.m_len[0] * mat1.m_len[1] == mat2.m_len[0] * mat2.m_len[1])
+		{ 
+			
+			for (int i = 0; i < mat1.m_len[0] * mat1.m_len[1]; i++)
+			{
+				mat1.m_matrix_copy.emplace_back((mat1.m_matrix[i] + mat2.m_matrix[i]));
+			}
+			return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat1.m_len[1]);
+		}
+		else {
+			return nullptr;
+		}
+	}
+	static matrix& crossprod(const matrix& mat1, const matrix& mat2) {
+		for  (int i = 0;  i < mat1.m_len[1];  i++)
+		{
+			for (int j = 0; j < mat1.m_len[1]; j++)
+			{
+			}
+		}
+	}
+	friend std::ostream& operator<<(std::ostream& stream, const matrix& mat) {
+		for  (int i = 0;  i < mat.m_len[0];  i++)
+		{
+			for (int j = 0; j < mat.m_len[1]; j++)
+			{
+				stream << mat.m_matrix[j]<<" , ";
+			}
+			stream << "\n";
+		}
+		return stream;
 	}
 	~matrix() {
 	}

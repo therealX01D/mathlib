@@ -11,5 +11,26 @@ int main() {
 	log("angle between vector(1,2), vector (3,4) is", vec2d::anglebet(vec1, vec2)); 
 	log("normalize vector (3,4)", 0);
 	std::cout << *(vec2+vec1);
+	int multi[7][7];
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 7; j++) {
+			multi[i][j] = 5;
+		}
+	}
+	matrix mat1((int*)multi, (sizeof multi / sizeof multi[0] ) , (sizeof multi[0]/ sizeof(int)));
+	std::cout << mat1;
+	int multi1[7][7];
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 7; j++) {
+			multi1[i][j] = 7;
+		}
+	}
+
+	matrix mat2((int*)multi1,(sizeof multi1 / sizeof multi1[0]) , (sizeof multi1[0]/ sizeof(int)));
+	std::cout << mat2;
+	
+	std::cout << *(mat1 + mat2);
+	std::cout << mat1;
+
 	std::cin.get();
 }
