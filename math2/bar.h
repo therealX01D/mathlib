@@ -4,6 +4,10 @@
 #include "log.h"
 #include <vector>
 #define PI 3.1415926
+
+#define SIZE_ROW(multi) (sizeof multi / sizeof multi[0] )
+#define SIZE_COL(multi) (sizeof multi[0] / sizeof (int) )
+//#define SIZE_MUL(multi) (SIZE_ROW(multi),SIZE_COL(multi))
 int pwr(int no, char pwr);
 int add(int st, int sond);
 
@@ -80,7 +84,7 @@ public:
 		if (mat1.m_len[0] * mat1.m_len[1] == mat2.m_len[0] * mat2.m_len[1])
 		{ 
 			
-			for (int i = 0; i < mat1.m_len[0] * mat1.m_len[1]; i++)
+			for (int i = 0; i < mat1.size; i++)
 			{
 				mat1.m_matrix_copy.emplace_back((mat1.m_matrix[i] + mat2.m_matrix[i]));
 			}
@@ -90,13 +94,36 @@ public:
 			return nullptr;
 		}
 	}
-	static matrix& crossprod(const matrix& mat1, const matrix& mat2) {
-		for  (int i = 0;  i < mat1.m_len[1];  i++)
+	static std::unique_ptr<matrix> multipl(matrix& mat1, const matrix& mat2) {
+		std::vector<int> col;
+		std::vector<int> row;
+		int sum = 0;
+		mat1.m_matrix_copy = {};
+	    
+		for (int i = 0; i < mat1.m_len[0]; i++)
 		{
+			for (int k = 0; k < mat1.m_len[0]; k++)
+			{
+				sum += mat1.m_matrix[i + k * 7] * mat2.m_matrix[k];
+			}
+			mat1.m_matrix_copy.emplace_back(sum);
+			sum = 0;
+		}
+		/*for (int i = 0; i < mat1.m_len[1]; i++)
+		{
+			for (int k = 0; k < mat1.m_len[1]; k++)
+			{
+				col.emplace_back(mat1.m_matrix[k * mat1.m_len[0]]);
+			}
 			for (int j = 0; j < mat1.m_len[1]; j++)
 			{
+				sum += col[j] * mat2.m_matrix[j];
 			}
-		}
+			mat1.m_matrix_copy.emplace_back(sum);
+			sum = 0;
+		}*/
+		
+		return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat1.m_len[0]);
 	}
 	friend std::ostream& operator<<(std::ostream& stream, const matrix& mat) {
 		for  (int i = 0;  i < mat.m_len[0];  i++)
@@ -110,5 +137,6 @@ public:
 		return stream;
 	}
 	~matrix() {
+		m_matrix_copy = { 0 };
 	}
 };

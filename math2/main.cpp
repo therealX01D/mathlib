@@ -14,22 +14,30 @@ int main() {
 	int multi[7][7];
 	for (int i = 0; i < 7; i++) {
 		for (int j = 0; j < 7; j++) {
-			multi[i][j] = 5;
+			if (j%2==0)
+			{
+				multi[i][j] = 7;
+			}
+			else {
+				multi[i][j] = 5;
+			}
 		}
 	}
-	matrix mat1((int*)multi, (sizeof multi / sizeof multi[0] ) , (sizeof multi[0]/ sizeof(int)));
+	multi[6][6] = 51;
+	matrix mat1((int*)multi,SIZE_ROW(multi),SIZE_COL(multi));
 	std::cout << mat1;
 	int multi1[7][7];
 	for (int i = 0; i < 7; i++) {
 		for (int j = 0; j < 7; j++) {
-			multi1[i][j] = 7;
+				multi1[i][j] = j;
 		}
 	}
 
-	matrix mat2((int*)multi1,(sizeof multi1 / sizeof multi1[0]) , (sizeof multi1[0]/ sizeof(int)));
+	matrix mat2((int*)multi1, SIZE_ROW(multi), SIZE_COL(multi1));
 	std::cout << mat2;
 	
 	std::cout << *(mat1 + mat2);
+	std::cout <<"multiplication"<< *(matrix::multipl(mat1, mat2));
 	std::cout << mat1;
 
 	std::cin.get();
