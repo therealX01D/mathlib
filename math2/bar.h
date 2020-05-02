@@ -94,41 +94,36 @@ public:
 			return nullptr;
 		}
 	}
+	//todo 
+	std::unique_ptr<matrix> transbose() {}
+	float determinant() {}
+	//endtodo
 	static std::unique_ptr<matrix> multipl(matrix& mat1, const matrix& mat2) {
-		std::vector<int> col;
-		std::vector<int> row;
 		int sum = 0;
+
 		mat1.m_matrix_copy = {};
-	    
-		for (int i = 0; i < mat1.m_len[0]; i++)
+		if (mat1.m_len[1] == mat2.m_len[0])
 		{
-			for (int k = 0; k < mat1.m_len[0]; k++)
+			for (int i = 0; i <= mat2.m_len[0]; i++)
 			{
-				sum += mat1.m_matrix[i + k * 7] * mat2.m_matrix[k];
+				for  (int j = 0;  j < mat1.m_len[1];  j++)
+				{
+					sum += mat1.m_matrix[j*mat1.m_len[1]+i] * mat2.m_matrix[j];
+					
+				}
+				mat1.m_matrix_copy.emplace_back(sum);
+				sum = 0;
 			}
-			mat1.m_matrix_copy.emplace_back(sum);
-			sum = 0;
 		}
-		/*for (int i = 0; i < mat1.m_len[1]; i++)
-		{
-			for (int k = 0; k < mat1.m_len[1]; k++)
-			{
-				col.emplace_back(mat1.m_matrix[k * mat1.m_len[0]]);
-			}
-			for (int j = 0; j < mat1.m_len[1]; j++)
-			{
-				sum += col[j] * mat2.m_matrix[j];
-			}
-			mat1.m_matrix_copy.emplace_back(sum);
-			sum = 0;
-		}*/
-		
-		return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat1.m_len[0]);
+		else {
+			mat1.m_matrix_copy = {-1};
+		}
+		return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat2.m_len[1]);
 	}
 	friend std::ostream& operator<<(std::ostream& stream, const matrix& mat) {
-		for  (int i = 0;  i < mat.m_len[0];  i++)
+		for  (int i = 0;  i < mat.m_len[1];  i++)
 		{
-			for (int j = 0; j < mat.m_len[1]; j++)
+			for (int j = 0; j < mat.m_len[0]; j++)
 			{
 				stream << mat.m_matrix[j]<<" , ";
 			}

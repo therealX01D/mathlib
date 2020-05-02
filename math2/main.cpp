@@ -11,9 +11,10 @@ int main() {
 	log("angle between vector(1,2), vector (3,4) is", vec2d::anglebet(vec1, vec2)); 
 	log("normalize vector (3,4)", 0);
 	std::cout << *(vec2+vec1);
-	int multi[7][7];
+	//mat1 must have higher number of rows then mat2 and lower number of columns
+	int  multi[3][2];
 	for (int i = 0; i < 7; i++) {
-		for (int j = 0; j < 7; j++) {
+		for (int j = 0; j < 6; j++) {
 			if (j%2==0)
 			{
 				multi[i][j] = 7;
@@ -23,20 +24,20 @@ int main() {
 			}
 		}
 	}
-	multi[6][6] = 51;
-	matrix mat1((int*)multi,SIZE_ROW(multi),SIZE_COL(multi));
-	std::cout << mat1;
-	int multi1[7][7];
-	for (int i = 0; i < 7; i++) {
+	//multi[6][5] = 51;
+	matrix mat1((int*)multi, SIZE_ROW(multi), SIZE_COL(multi));
+	int multi1[2][3];
+	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 7; j++) {
 				multi1[i][j] = j;
 		}
 	}
 
-	matrix mat2((int*)multi1, SIZE_ROW(multi), SIZE_COL(multi1));
+	matrix mat2((int*)multi1, SIZE_ROW(multi1), SIZE_COL(multi1));
+	std::cout << mat1;
 	std::cout << mat2;
 	
-	std::cout << *(mat1 + mat2);
+	//std::cout << *(mat1 + mat2);
 	std::cout <<"multiplication"<< *(matrix::multipl(mat1, mat2));
 	std::cout << mat1;
 
