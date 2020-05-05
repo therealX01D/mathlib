@@ -1,4 +1,3 @@
 #pragma once
-#include <iostream>
-#include <string>
+#include "pch.h"
 void log(const char* message, float num);

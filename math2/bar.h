@@ -1,12 +1,13 @@
 #pragma once
-#include <cmath>
-#include "bar.h"
+
+#include "pch.h"
 #include "log.h"
-#include <vector>
+
 #define PI 3.1415926
 
 #define SIZE_ROW(multi) (sizeof multi / sizeof multi[0] )
 #define SIZE_COL(multi) (sizeof multi[0] / sizeof (int) )
+
 //#define SIZE_MUL(multi) (SIZE_ROW(multi),SIZE_COL(multi))
 int pwr(int no, char pwr);
 int add(int st, int sond);
@@ -30,7 +31,7 @@ public:
 	{
 		log("copied", 0);
 	}
-	float determinant() {
+	float virtual determinant() {
 		return sqrt(pwr(this->m_x, 2) + pwr(this->m_y, 2));
 	}
 	
@@ -68,25 +69,27 @@ private:
 	int m_len[2];
 	int size;
 	std::vector<int> m_matrix_copy;
+	std::vector<int> coeff;
 public:
 	
 	matrix() {}
 	matrix(int* i_matrix, int rw_len, int col_len) :
 		m_matrix(std::vector<int>(i_matrix, i_matrix +rw_len*col_len)),
-		m_matrix_copy(std::vector<int>(0, 0 + rw_len*col_len)),
+		m_matrix_copy(std::vector<int>(i_matrix, i_matrix + rw_len*col_len)),
 		m_len{rw_len,col_len},
 		size(rw_len*col_len)
 	{
 		
+		coeff.reserve(rw_len);
 	}
   
-	friend std::unique_ptr<matrix> operator+(matrix& mat1,const matrix& mat2) {
+	friend std::unique_ptr<matrix> operator+(const matrix& mat1,const matrix& mat2) {
 		if (mat1.m_len[0] * mat1.m_len[1] == mat2.m_len[0] * mat2.m_len[1])
 		{ 
 			
 			for (int i = 0; i < mat1.size; i++)
 			{
-				mat1.m_matrix_copy.emplace_back((mat1.m_matrix[i] + mat2.m_matrix[i]));
+				const_cast<matrix&>(mat1).m_matrix_copy.emplace_back((mat1.m_matrix[i] + mat2.m_matrix[i]));
 			}
 			return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat1.m_len[1]);
 		}
@@ -96,27 +99,48 @@ public:
 	}
 	//todo 
 	std::unique_ptr<matrix> transbose() {}
-	float determinant() {}
+	static float determinant(const matrix& mat)  {
+		int sum =0;
+			for (int i : mat.m_matrix_copy)
+			{
+				auto index = std::distance(mat.m_matrix_copy.begin(), find(mat.m_matrix_copy.begin(), mat.m_matrix_copy.end(), i));
+					//removed rows
+				const_cast<matrix&>(mat).m_matrix_copy.erase(mat.m_matrix_copy.begin(), mat.m_matrix_copy.begin() + mat.m_len[0]);
+				sum+= pow(-1, index) * i;
+				const_cast<matrix&>(mat).coeff.emplace_back(sum);
+				sum = 0;
+				for (int j = 0; j < sqrt(mat.m_matrix_copy.size()) - 1; j++)
+				{
+					const_cast<matrix&>(mat).m_matrix_copy.erase(const_cast<matrix&>(mat).m_matrix_copy.begin() + j * (sqrt(mat.m_matrix_copy.size())-1));
+				}
+				if (mat.m_matrix_copy.size() < mat.m_len[0]) break;
+			}
+			for (int v : mat.coeff)
+			{
+				sum += v;
+			}
+			return sum * mat.m_matrix_copy[0];
+
+	}
 	//endtodo
-	static std::unique_ptr<matrix> multipl(matrix& mat1, const matrix& mat2) {
+	static std::unique_ptr<matrix> multipl(const matrix& mat1, const matrix& mat2) {
 		int sum = 0;
 
-		mat1.m_matrix_copy = {};
+		const_cast<matrix&>(mat1).m_matrix_copy = {};
 		if (mat1.m_len[1] == mat2.m_len[0])
 		{
 			for (int i = 0; i <= mat2.m_len[0]; i++)
 			{
 				for  (int j = 0;  j < mat1.m_len[1];  j++)
 				{
-					sum += mat1.m_matrix[j*mat1.m_len[1]+i] * mat2.m_matrix[j];
-					
+					sum += mat1.m_matrix[i+j*mat1.m_len[1]] * mat2.m_matrix[j];
 				}
-				mat1.m_matrix_copy.emplace_back(sum);
+				const_cast<matrix&>(mat1).m_matrix_copy.emplace_back(sum);
 				sum = 0;
 			}
 		}
 		else {
-			mat1.m_matrix_copy = {-1};
+			const_cast<matrix&>(mat1).m_matrix_copy = {-1};
 		}
 		return std::make_unique<matrix>((int*)mat1.m_matrix_copy.data(), mat1.m_len[0], mat2.m_len[1]);
 	}
@@ -133,5 +157,6 @@ public:
 	}
 	~matrix() {
 		m_matrix_copy = { 0 };
+		
 	}
 };

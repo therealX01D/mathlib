@@ -1,4 +1,5 @@
-
+#include "pch.h"
+#include "bar.h"
 int add(int st, int sond) {
 	return st + sond;
 }
